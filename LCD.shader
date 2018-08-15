@@ -3,7 +3,7 @@ Shader "Custom/LCD" {
     Properties{
         _MainTex ("Texture", 2D) = "white" {}
         _PixelTex ("Pixel texture", 2D) = "white" {}
-        _PixelDensity ("Pixel Density", Int) = 10.0
+        _PixelDensity ("Pixel Density", Float) = 10.0
         _BackLight ("Pixel backlight", Range(0,10)) = 5
         _Static ("Static noise", Range(0,0.25)) = 0.01
         _Distort ("Distortion Amount", Range(0,0.25)) = 0.1
@@ -68,7 +68,7 @@ Shader "Custom/LCD" {
 
             fixed4 frag (v2f i) : SV_Target {
 
-                clip(rand(i.uv_MainTex) - _Static);
+                clip(rand(i.uv_MainTex*_Time.z) - _Static);
 
                 fixed4 c1 = tex2D(_MainTex, i.uv_MainTex);
                 fixed4 c2 = tex2D(_PixelTex, i.uv_PixelTex);
@@ -130,7 +130,7 @@ Shader "Custom/LCD" {
 
             fixed4 frag (v2f i) : SV_Target {
 
-                clip(rand(i.uv_MainTex) - _Static);
+                clip(rand(i.uv_MainTex*_Time.z) - _Static);
 
                 fixed4 c1 = tex2D(_MainTex, i.uv_MainTex);
                 fixed4 c2 = tex2D(_PixelTex, i.uv_PixelTex);
@@ -193,7 +193,7 @@ Shader "Custom/LCD" {
 
             fixed4 frag (v2f i) : SV_Target {
 
-                clip(rand(i.uv_MainTex) - _Static);
+                clip(rand(i.uv_MainTex*_Time.z) - _Static);
 
                 fixed4 c1 = tex2D(_MainTex, i.uv_MainTex);
                 fixed4 c2 = tex2D(_PixelTex, i.uv_PixelTex);
