@@ -1,12 +1,15 @@
-Shader "Custom/LCD" {
+Shader "Custom/CRT" {
 
     Properties{
         _MainTex ("Texture", 2D) = "white" {}
         _PixelTex ("Pixel texture", 2D) = "white" {}
+        _GlassTex ("Glass texture", 2D) = "white" {}
         _PixelDensity ("Pixel Density", Float) = 10.0
         _BackLight ("Pixel backlight", Range(0,10)) = 5
         _Static ("Static noise", Range(0,0.25)) = 0.01
-        _Distort ("Distortion Amount", Range(0,0.25)) = 0.1
+        _Distort ("Distortion Amount", Range(0,0.1)) = 0.01
+        _DistortNar ("Distortion Narrowness (x2)", Range(1,10)) = 5.0
+        _DistortSpd ("Distortion Speed", Range(1,10)) = 5.0
     }
 
     SubShader {
@@ -44,7 +47,7 @@ Shader "Custom/LCD" {
             sampler2D _MainTex;
             sampler2D _PixelTex;
             int _PixelDensity; 
-            fixed _BackLight, _Static, _Distort, _Freq;
+            fixed _BackLight, _Static, _Distort, _DistortNar, _DistortSpd;
 
             v2f vert(appdata v) {
 
@@ -52,16 +55,12 @@ Shader "Custom/LCD" {
                 
                 o.uv_MainTex = v.uv_MainTex;
                 o.uv_PixelTex.xy = v.uv_MainTex * _PixelDensity;
-                o.uv_PixelTex.x += _PixelDensity/3.0;
-
-                // Transform the normal from object space to view space
-				float3 viewNorm  = normalize(mul ((float3x3)UNITY_MATRIX_IT_MV, v.normal));
-                // Get the direction of the displacement (we'll only use the Xs in projection space)
-                float2 distorDir = TransformViewToProjection(viewNorm.xy);
-                // Displace the vertex
-                v.vertex.x += distorDir.x * _Distort * sin(_Time.z*5) *v.vertex.y;
+                o.uv_PixelTex.x -= _PixelDensity/3.0;
 
                 o.pos = UnityObjectToClipPos(v.vertex);
+
+                o.pos.x += _Distort * exp(-pow(_CosTime.z*_DistortSpd - o.pos.y, 2) / 2*pow(_DistortNar,2));
+                //o.pos.x += _Distort * sin( _Time.z*_DistortNar*o.pos.y );
 
                 return o;
             }
@@ -108,7 +107,7 @@ Shader "Custom/LCD" {
             sampler2D _MainTex;
             sampler2D _PixelTex;
             int _PixelDensity; 
-            fixed _BackLight, _Static, _Distort, _Freq;
+            fixed _BackLight, _Static, _Distort, _DistortNar, _DistortSpd;
 
             v2f vert(appdata v) {
 
@@ -117,14 +116,10 @@ Shader "Custom/LCD" {
                 o.uv_MainTex = v.uv_MainTex;
                 o.uv_PixelTex.xy = v.uv_MainTex * _PixelDensity;
 
-                // Transform the normal from object space to view space
-				float3 viewNorm  = normalize(mul ((float3x3)UNITY_MATRIX_IT_MV, v.normal));
-                // Get the direction of the displacement (we'll only use the Xs in projection space)
-                float2 distorDir = TransformViewToProjection(viewNorm.xy);
-                // Displace the vertex
-                v.vertex.x += distorDir.x * _Distort * sin(_Time.z*5 + 45.0) *v.vertex.y;
-
                 o.pos = UnityObjectToClipPos(v.vertex);
+
+                o.pos.x += _Distort * exp(-pow(_CosTime.z/_SinTime.x*_DistortSpd - o.pos.y, 2) / 2*pow(_DistortNar,2));
+
                 return o;
             }
 
@@ -170,7 +165,7 @@ Shader "Custom/LCD" {
             sampler2D _MainTex;
             sampler2D _PixelTex;
             int _PixelDensity; 
-            fixed _BackLight, _Static, _Distort, _Freq;
+            fixed _BackLight, _Static, _Distort, _DistortSpd, _DistortNar;
 
             v2f vert(appdata v) {
 
@@ -178,16 +173,11 @@ Shader "Custom/LCD" {
                 
                 o.uv_MainTex = v.uv_MainTex;
                 o.uv_PixelTex.xy = v.uv_MainTex * _PixelDensity;
-                o.uv_PixelTex.x -= _PixelDensity/3.0;
-
-                // Transform the normal from object space to view space
-				float3 viewNorm  = normalize(mul ((float3x3)UNITY_MATRIX_IT_MV, v.normal));
-                // Get the direction of the displacement (we'll only use the Xs in projection space)
-                float2 distorDir = TransformViewToProjection(viewNorm.xy);
-                // Displace the vertex
-                v.vertex.x += distorDir.x * _Distort * sin(_Time.z*5 + 90.0) *v.vertex.y;
+                o.uv_PixelTex.x += _PixelDensity/3.0;
 
                 o.pos = UnityObjectToClipPos(v.vertex);
+                o.pos.x += _Distort * exp(-pow(_SinTime.z*_DistortSpd - o.pos.y, 2) / 2*pow(_DistortNar,2));
+
                 return o;
             }
 
@@ -204,6 +194,30 @@ Shader "Custom/LCD" {
             }
             ENDCG
         }
-    }
 
+        // Glass
+        CGPROGRAM
+        #include "UnityCG.cginc"
+
+        #pragma surface surf Standard fullforwardshadows alpha:blend
+        #pragma target 3.0
+
+        sampler2D _GlassTex;
+        struct Input {
+            float2 uv_MainTex;
+        };
+
+        void surf (Input IN, inout SurfaceOutputStandard o) {
+
+            fixed4 c = tex2D (_GlassTex, IN.uv_MainTex);
+
+            o.Albedo = fixed3(1.0,1.0,1.0);
+            o.Alpha = c.a + 0.1;
+            o.Emission = c;
+            o.Metallic = 0.0;
+            o.Smoothness = 1.0;
+        }
+        ENDCG
+    }
+    Fallback "Diffuse"
 }
