@@ -3,6 +3,8 @@
 Simple shaders for Unity3D that I created for games, for a challenge or following tutorials.
 
 For now:
+Shaders:
+- Basic Occlusion Outline
 - Tube TV Screen
 - Dissolving
 - Hologram
@@ -11,7 +13,9 @@ For now:
 - Toon Cascade
 - Toon Fire Tornado
 - Water
+Includes:
 - Simple noise functions (to use noise without a texture)
+- Fractal Brownian Motion functions.
 
 #### Some examples
 ![N|Solid](https://img.itch.zone/aW1hZ2UvMjg2MDExLzE0MzAwMDAucG5n/original/TABjwQ.png)
