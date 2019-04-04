@@ -4,6 +4,7 @@ Simple shaders for Unity3D that I created for games, for a challenge or followin
 
 For now:
 Shaders:
+- Grass Displacement
 - Basic Occlusion Outline
 - Tube TV Screen
 - Dissolving
@@ -18,6 +19,7 @@ Includes:
 - Fractal Brownian Motion functions.
 
 #### Some examples
+![N|Solid](https://img.itch.zone/aW1hZ2UvMjg2MDExLzE5ODc0ODQuZ2lm/347x500/6uqowS.gif)
 ![N|Solid](https://img.itch.zone/aW1hZ2UvMjg2MDExLzE0MzAwMDAucG5n/original/TABjwQ.png)
 ![N|Solid](https://img.itch.zone/aW1hZ2UvMjg2MDExLzE0MzAwMDEucG5n/original/tkpBq9.png)
 ![N|Solid](https://img.itch.zone/aW1hZ2UvMjg2MDExLzEzOTI0NDcucG5n/original/I3ouVg.png)
