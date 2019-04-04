@@ -2,11 +2,14 @@
 {
     Properties
     {
+        _Tint ("Tint", Color) = (0,0,0,0)
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
         _Glossiness ("Smoothness", Range(0,1)) = 0.5
         _Metallic ("Metallic", Range(0,1)) = 0.0
         _OutlineColor ("Outline Color", Color) = (1,1,1,1)
         _OutlineThickness("Outline Thickness", Range(0,1)) = 0.5
+        _Power ("Fresnel Power", Int) = 2
+        _Bias ("Fresnel Bias", Float) = 1.0
     }
     SubShader
     {
@@ -18,8 +21,7 @@
             ZTest Always
 
             CGPROGRAM
-// Upgrade NOTE: excluded shader from DX11; has structs without semantics (struct v2f members viewDir)
-#pragma exclude_renderers d3d11
+
             #pragma vertex vert
             #pragma fragment frag
             #include "UnityCG.cginc"
@@ -44,13 +46,14 @@
             }
 
             float4 _OutlineColor;
-            half _OutlineThickness;
+            half _OutlineThickness, _Power, _Bias;
 
             fixed4 frag(v2f IN) : SV_Target
             {
                 float4 c = _OutlineColor;
-                half rim = 1.0 - saturate( dot(normalize(IN.viewDir), IN.normal) );
-                if (rim < 1.0-_OutlineThickness) discard;
+                //o.R = _Bias + _Scale * pow(1.0 + dot(I, normWorld), _Power);
+                half rim = saturate( dot(normalize(IN.viewDir), IN.normal) );
+                if (rim > _OutlineThickness) discard;
                 return c;
             }
 
@@ -70,13 +73,14 @@
             float2 uv_MainTex;
         };
 
+        fixed4 _Tint;
         half _Glossiness;
         half _Metallic;
 
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
             // Albedo comes from a texture tinted by color
-            fixed4 c = tex2D (_MainTex, IN.uv_MainTex);
+            fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Tint;
             o.Albedo = c.rgb;
             // Metallic and smoothness come from slider variables
             o.Metallic = _Metallic;
