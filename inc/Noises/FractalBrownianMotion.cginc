@@ -1,6 +1,4 @@
-fixed rand(fixed2 coord){
-    return frac(sin(dot(coord, fixed2(56, 78)) * 1000.0) * 1000.0);
-}
+#include "../rand.cginc"
 
 fixed noise(fixed2 coord)
 {
