@@ -18,8 +18,10 @@ Shaders:
 - Water
 
 Includes:
+- RNGs
 - Simple noise functions (to use noise without a texture)
 - Fractal Brownian Motion functions.
+- Voronoi cellular noises
 
 #### Some examples
 ![N|Solid](https://img.itch.zone/aW1hZ2UvMjg2MDExLzI2NjMwNTYucG5n/347x500/6L7kRc.png)
