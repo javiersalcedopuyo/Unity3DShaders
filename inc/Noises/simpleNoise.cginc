@@ -1,8 +1,9 @@
 // Unity's ShaderGraph SimpleNoise function
-float rand (float2 uv)
-{
-    return frac(sin(dot(uv, float2(12.9898, 78.233)))*43758.5453);
-}
+
+#ifndef SIMPLE_NOISE_CGINC
+#define SIMPLE_NOISE_CGINC
+
+#include "../rand.cginc"
 
 float unity_noise_interpolate (float a, float b, float t)
 {
@@ -41,3 +42,4 @@ float simpleNoise(float Scale, fixed2 UV) {
     }
     return t;
 }
+#endif

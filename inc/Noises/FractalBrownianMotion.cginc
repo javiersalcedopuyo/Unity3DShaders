@@ -1,3 +1,6 @@
+#ifndef FBM_CGINC
+#define FBM_CGINC
+
 #include "../rand.cginc"
 
 fixed noise(fixed2 coord)
@@ -28,3 +31,4 @@ fixed fbm(fixed2 coord, int octaves=4)
     }
     return value;
 }
+#endif
